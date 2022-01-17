@@ -1,0 +1,77 @@
+Text and code transpiler app: React and Typescript: Build a portfolio project
+
+ -> Really Big Challenges
+1. Code will be provided to Preview as a string. We have to execute it safely
+2. This code might have advanced JS syntax in it (like JSX) that your browser can't execute.
+3. The code might have import statements for other JS files or CSS. We have to deal with those import statements before executing the code
+
+ -> Code transpiling in the browser
+------------------------------------
+
+1. Transpiling optons:
+	a. Babel - ex: codepen.io(remote execution) and babeljs.io(in-browser execution)
+2. Module Systems:
+	a. webpack - code bundler
+3. Options for bundling: 
+	a. Backend API server that runs webpack and gets import statements that are not in local from npm(https://webpack-v3.jsx.app/plugins/npm-install-webpack-plugin/)
+	b. Backend API server we write plugin to fetch indivisual file from npm(caching can done)
+	c. we write plugin to fetch indivisual file from npm in the react app itself not in backend.
+4. Which approach?
+	Transpiling/Bundling Remotely or Locally?
+			Remote 						Local
+		We can cache downloaded NPM modules to 		Removes an extra request to the API server
+                       bundle code faster.      			- faster code execution! 
+		Will work better for users with slow devices	We don't have to maintain an API server!
+		or limited internet connections.		Less complexity - no moving code back and
+                                   				forth.
+	Going with local approach in this application
+
+5. A webpack replacement:
+	webpack does not work in browser. Major block!
+	We will use ESBuild(https://esbuild.github.io/) instead of webpack and babel.
+	ESbuild can transpile + bundle our code all in the browser
+
+===========================================================================================================================
+
+ -> Implementing in-browser Bundling
+-------------------------------------
+
+We will create a demo app which transpiles and bundles code with ESBuild
+
+1. npx create-react-app jbook --template typescript
+2. in jsbook project
+	npm i --save-exact esbuild-wasm@0.8.27
+3. Bundling in browser is difficult. we will write custom api in react to fetch required library from npm
+	Transform API: The transform API call operates on a single string without access to a file system. 
+			This makes it ideal for use in environments without a file system (such as a browser)
+	Build API: The build API call operates on one or more files in the file system.
+4. We cannot make direct requestes from api npm as it give cors erros. We use unpkg(https://unpkg.com/) to get npm files.
+	Unpkg: unpkg is a fast, global content delivery network for everything on npm.
+
+5. ESBuild Bundling Process -> Figure out where the index.js file is stored(onResolve step) -> Attempt to load up the index.js file(onLoad step)
+       		-> Parse the index.js file, find any import/require/exports -> If there are any import/require/exports, figure out where the requested file is(onResolve step)
+                -> Attempt to load that file up onLoad step
+ - we are giving a custom plugin to resolve or load esbuild - unpkg-path-plugin.ts file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
