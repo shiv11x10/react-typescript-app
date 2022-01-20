@@ -34,11 +34,13 @@ export const fetchPlugin = (inputCode: String) => {
       build.onLoad({ filter: /.css$/ }, async (args: any) => {
         const { data, request } = await axios.get(args.path);
 
+        // escape the single and double quotes in css file
         const escaped = data
           .replace(/\n/g, "")
           .replace(/"/g, '\\"')
           .replace(/'/g, "\\'");
 
+        // add the css file to dom
         const contents = `
                         const style = document.createElement('style'); 
                         style.innerText = '${escaped}';
